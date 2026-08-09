@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uludağ Emlak | Hayalinizdeki Evi Bulun</title>
+    <meta name="description" content="Uludağ Emlak - Güvenilir ve profesyonel emlak hizmeti. Satılık, kiralık daire, villa, arsa ve daha fazlası.">
+    <meta name="keywords" content="emlak, satılık daire, kiralık daire, villa, arsa, Uludağ Emlak">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css?v=2">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header id="header">
+        <nav class="nav-container">
+            <button id="logo-btn" class="logo-btn" title="Uludağ Emlak">
+                <span class="logo-icon">🏠</span>
+                <span class="logo-text">Uludağ<span style="color: #0071E3;">Emlak</span></span>
+            </button>
+            <div id="nav-links" class="nav-links">
+                <a href="#hero" class="nav-link">Ana Sayfa</a>
+                <a href="#listings-section" class="nav-link">İlanlar</a>
+                <a href="#contact-section" class="nav-link">İletişim</a>
+            </div>
+            <div id="admin-controls" class="admin-controls hidden">
+                <span class="admin-badge">👤 Yönetici</span>
+                <button id="admin-logout-btn" class="btn btn-ghost btn-small">Çıkış</button>
+            </div>
+            <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Menü">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section id="hero" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Hayalinizdeki<br>Evi Bulun</h1>
+            <p class="hero-subtitle">Uludağ Emlak ile güvenilir ve profesyonel emlak hizmeti.<br>Satılık, kiralık ve günlük kiralık seçenekleriyle yanınızdayız.</p>
+            <a href="#listings-section" class="btn btn-primary btn-large">İlanları Keşfet</a>
+        </div>
+    </section>
+
+    <!-- İLANLAR SECTION -->
+    <section id="listings-section" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Güncel İlanlar</h2>
+                <button id="admin-add-btn" class="btn btn-primary admin-only hidden">
+                    <span>＋</span> Yeni İlan Ekle
+                </button>
+            </div>
+            
+            <!-- FİLTRELER -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <select id="filter-type" class="filter-select">
+                        <option value="all">Tüm İlan Türleri</option>
+                        <option value="satilik">Satılık</option>
+                        <option value="kiralik">Kiralık</option>
+                        <option value="gunluk">Günlük Kiralık</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <select id="filter-property" class="filter-select">
+                        <option value="all">Tüm Emlak Türleri</option>
+                        <option value="daire">Daire</option>
+                        <option value="villa">Villa</option>
+                        <option value="mustakil">Müstakil Ev</option>
+                        <option value="arsa">Arsa</option>
+                        <option value="dukkan">Dükkan</option>
+                        <option value="ofis">Ofis</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <select id="filter-sort" class="filter-select">
+                        <option value="newest">En Yeni</option>
+                        <option value="oldest">En Eski</option>
+                        <option value="price-asc">Fiyat (Artan)</option>
+                        <option value="price-desc">Fiyat (Azalan)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- İLAN GRİD -->
+            <div id="listings-grid" class="listings-grid">
+                <!-- İlan kartları JavaScript ile render edilecek -->
+            </div>
+
+            <!-- BOŞ DURUM -->
+            <div id="empty-state" class="empty-state hidden">
+                <div class="empty-icon">🏘️</div>
+                <h3>Henüz ilan bulunmuyor</h3>
+                <p>Yakında yeni ilanlar eklenecektir.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- İLETİŞİM SECTION -->
+    <section id="contact-section" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title" style="text-align: center; margin-bottom: 48px;">İletişim</h2>
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <div class="contact-icon">📞</div>
+                    <h3>Telefon</h3>
+                    <p style="margin-bottom: 8px;"><strong>Ercan ULUDAĞ</strong></p>
+                    <p style="margin-bottom: 16px;"><a href="tel:+905324531171" style="color: #0071E3; text-decoration: none; font-weight: 600;">0532 453 11 71</a></p>
+                    <p style="margin-bottom: 8px;"><strong>Hüseyin ULUDAĞ</strong></p>
+                    <p><a href="tel:+905386322878" style="color: #0071E3; text-decoration: none; font-weight: 600;">0538 632 28 78</a></p>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon">📍</div>
+                    <h3>Adres</h3>
+                    <p id="contact-address">Afyonkarahisar Sandıklı Ece Mah. Fenerli Sok. No 3</p>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon">💬</div>
+                    <h3>WhatsApp</h3>
+                    <p style="margin-bottom: 12px; font-size: 0.85rem; color: #86868B;">Ercan ULUDAĞ</p>
+                    <a href="https://wa.me/905324531171" target="_blank" rel="noopener" class="btn btn-whatsapp" style="margin-bottom: 12px; display: flex;">
+                        WhatsApp ile İletişime Geç
+                    </a>
+                    <p style="margin-bottom: 12px; font-size: 0.85rem; color: #86868B;">Hüseyin ULUDAĞ</p>
+                    <a href="https://wa.me/905386322878" target="_blank" rel="noopener" class="btn btn-whatsapp" style="display: flex;">
+                        WhatsApp ile İletişime Geç
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Uludağ Emlak. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+    <!-- ŞİFRE MODALI -->
+    <div id="password-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <button class="modal-close" aria-label="Kapat">&times;</button>
+            <div class="modal-header">
+                <div class="modal-icon">🔐</div>
+                <h3>Yönetici Girişi</h3>
+                <p class="modal-subtitle">Devam etmek için yönetici şifresini girin</p>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="password-input">Şifre</label>
+                    <input type="password" id="password-input" class="form-input" placeholder="••••••••" autocomplete="off">
+                    <p id="password-error" class="form-error hidden">Yanlış şifre. Lütfen tekrar deneyin.</p>
+                </div>
+                <button id="password-submit" class="btn btn-primary btn-full">Giriş Yap</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- İLAN DETAY MODALI -->
+    <div id="listing-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-large">
+            <button class="modal-close" aria-label="Kapat">&times;</button>
+            <div id="listing-modal-body" class="modal-body">
+                <!-- İlan detayları JavaScript ile render edilecek -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMİN FORM MODALI (EKLEME/DÜZENLEME) -->
+    <div id="admin-form-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-large">
+            <button class="modal-close" aria-label="Kapat">&times;</button>
+            <div class="modal-header">
+                <h3 id="admin-form-title">Yeni İlan Ekle</h3>
+            </div>
+            <div class="modal-body">
+                <form id="admin-form" novalidate>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="form-title">Başlık *</label>
+                            <input type="text" id="form-title" class="form-input" placeholder="Örn: 3+1 Deniz Manzaralı Daire" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="form-price">Fiyat (₺) *</label>
+                            <input type="number" id="form-price" class="form-input" placeholder="Örn: 2500000" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="form-location">Konum *</label>
+                            <input type="text" id="form-location" class="form-input" placeholder="Örn: Bursa, Nilüfer" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="form-listing-type">İlan Türü *</label>
+                            <select id="form-listing-type" class="form-input" required>
+                                <option value="">Seçiniz</option>
+                                <option value="satilik">Satılık</option>
+                                <option value="kiralik">Kiralık</option>
+                                <option value="gunluk">Günlük Kiralık</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="form-property-type">Emlak Türü *</label>
+                            <select id="form-property-type" class="form-input" required>
+                                <option value="">Seçiniz</option>
+                                <option value="daire">Daire</option>
+                                <option value="villa">Villa</option>
+                                <option value="mustakil">Müstakil Ev</option>
+                                <option value="arsa">Arsa</option>
+                                <option value="dukkan">Dükkan</option>
+                                <option value="ofis">Ofis</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="form-rooms">Oda Sayısı</label>
+                            <select id="form-rooms" class="form-input">
+                                <option value="">Seçiniz</option>
+                                <option value="1+0">1+0 (Stüdyo)</option>
+                                <option value="1+1">1+1</option>
+                                <option value="2+1">2+1</option>
+                                <option value="2+2">2+2</option>
+                                <option value="3+1">3+1</option>
+                                <option value="3+2">3+2</option>
+                                <option value="4+1">4+1</option>
+                                <option value="4+2">4+2</option>
+                                <option value="5+1">5+1</option>
+                                <option value="5+2">5+2</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="form-area">Metrekare (m²)</label>
+                            <input type="number" id="form-area" class="form-input" placeholder="Örn: 140">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="form-floor">Kat</label>
+                            <input type="number" id="form-floor" class="form-input" placeholder="Örn: 5">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="form-building-age">Bina Yaşı</label>
+                            <input type="number" id="form-building-age" class="form-input" placeholder="Örn: 3">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="form-heating">Isınma Tipi</label>
+                            <select id="form-heating" class="form-input">
+                                <option value="">Seçiniz</option>
+                                <option value="dogalgaz">Doğalgaz</option>
+                                <option value="kombi">Kombi</option>
+                                <option value="soba">Soba</option>
+                                <option value="merkezi">Merkezi</option>
+                                <option value="klima">Klima</option>
+                                <option value="yerden">Yerden Isıtma</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="form-description">Açıklama</label>
+                        <textarea id="form-description" class="form-input form-textarea" rows="4" placeholder="İlan hakkında detaylı bilgi yazın..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="form-images">Fotoğraflar</label>
+                        <input type="file" id="form-images" class="form-input form-file" multiple accept="image/*">
+                        <div id="image-preview" class="image-preview"></div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="form-cancel" class="btn btn-ghost">İptal</button>
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- SİLME ONAY MODALI -->
+    <div id="delete-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <div class="modal-icon">⚠️</div>
+                <h3>İlanı Sil</h3>
+            </div>
+            <div class="modal-body">
+                <p style="text-align: center; color: #86868B; margin-bottom: 24px;">Bu ilanı silmek istediğinizden emin misiniz?<br>Bu işlem geri alınamaz.</p>
+                <div class="form-actions" style="justify-content: center;">
+                    <button id="delete-cancel" class="btn btn-ghost">İptal</button>
+                    <button id="delete-confirm" class="btn btn-danger">Evet, Sil</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST BİLDİRİM CONTAINER -->
+    <div id="toast-container"></div>
+
+    <!-- SCRIPTS (sıralı yükleme) -->
+    <script src="js/storage.js?v=3"></script>
+    <script src="js/admin.js?v=3"></script>
+    <script src="js/app.js?v=3"></script>
+</body>
+</html>
