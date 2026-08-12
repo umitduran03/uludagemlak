@@ -80,10 +80,74 @@ async function getListing(id) {
   }
 }
 
+// ==================== TESTIMONIALS ====================
+const TESTIMONIALS_COLLECTION = 'testimonials';
+
+async function getTestimonials() {
+  try {
+    const snapshot = await window.db.collection(TESTIMONIALS_COLLECTION)
+      .orderBy('createdAt', 'desc')
+      .get();
+    
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      createdAt: doc.data().createdAt?.toDate?.() ? doc.data().createdAt.toDate().toISOString() : doc.data().createdAt,
+      updatedAt: doc.data().updatedAt?.toDate?.() ? doc.data().updatedAt.toDate().toISOString() : doc.data().updatedAt
+    }));
+  } catch (e) {
+    console.error('Firestore getTestimonials hatası:', e);
+    return [];
+  }
+}
+
+async function addTestimonial(data) {
+  try {
+    const newItem = {
+      ...data,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    const docRef = await window.db.collection(TESTIMONIALS_COLLECTION).add(newItem);
+    return { ...newItem, id: docRef.id };
+  } catch (e) {
+    console.error('Firestore addTestimonial hatası:', e);
+    return null;
+  }
+}
+
+async function updateTestimonial(id, data) {
+  try {
+    const updateData = {
+      ...data,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    await window.db.collection(TESTIMONIALS_COLLECTION).doc(id).update(updateData);
+    return { id, ...updateData };
+  } catch (e) {
+    console.error('Firestore updateTestimonial hatası:', e);
+    return null;
+  }
+}
+
+async function deleteTestimonial(id) {
+  try {
+    await window.db.collection(TESTIMONIALS_COLLECTION).doc(id).delete();
+    return true;
+  } catch (e) {
+    console.error('Firestore deleteTestimonial hatası:', e);
+    return false;
+  }
+}
+
 window.Storage = { 
   getListings, 
   addListing, 
   updateListing, 
   deleteListing, 
-  getListing 
+  getListing,
+  getTestimonials,
+  addTestimonial,
+  updateTestimonial,
+  deleteTestimonial
 };

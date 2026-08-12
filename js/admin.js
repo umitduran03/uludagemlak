@@ -328,6 +328,175 @@ function setupAdminEvents() {
       e.target.value = ''; // Reset input
     });
   }
+
+  // Testimonial event listeners
+  const testimonialAddBtn = document.getElementById('testimonial-add-btn');
+  const testimonialForm = document.getElementById('testimonial-form');
+  const testimonialFormCancel = document.getElementById('testimonial-form-cancel');
+  const testimonialDeleteCancel = document.getElementById('testimonial-delete-cancel');
+
+  if (testimonialAddBtn) testimonialAddBtn.addEventListener('click', () => openTestimonialModal());
+  if (testimonialForm) testimonialForm.addEventListener('submit', handleTestimonialSubmit);
+  if (testimonialFormCancel) testimonialFormCancel.addEventListener('click', closeTestimonialModal);
+  if (testimonialDeleteCancel) {
+    testimonialDeleteCancel.addEventListener('click', () => {
+      const modal = document.getElementById('testimonial-delete-modal');
+      if (modal) modal.classList.add('hidden');
+    });
+  }
 }
 
-window.Admin = { setupAdminEvents, login, logout, isLoggedIn, openFormModal, confirmDelete, showToast };
+// ==================== TESTIMONIAL YÖNETİMİ ====================
+
+let currentTestimonialImage = '';
+
+async function openTestimonialModal(testimonialId = null) {
+  const modal = document.getElementById('testimonial-form-modal');
+  const form = document.getElementById('testimonial-form');
+  const title = document.getElementById('testimonial-form-title');
+  const imagePreview = document.getElementById('testimonial-image-preview');
+  currentTestimonialImage = '';
+
+  if (form) form.reset();
+  if (imagePreview) imagePreview.innerHTML = '';
+
+  if (testimonialId) {
+    if (title) title.textContent = 'Yorumu Düzenle';
+    form.setAttribute('data-editing-id', testimonialId);
+    const testimonials = await window.Storage.getTestimonials();
+    const testimonial = testimonials.find(t => t.id === testimonialId);
+    if (testimonial) {
+      document.getElementById('testimonial-title').value = testimonial.title || '';
+      document.getElementById('testimonial-description').value = testimonial.description || '';
+      if (testimonial.image) {
+        currentTestimonialImage = testimonial.image;
+        renderTestimonialImagePreview();
+      }
+    }
+  } else {
+    if (title) title.textContent = 'Yeni Müşteri Yorumu Ekle';
+    form.removeAttribute('data-editing-id');
+  }
+
+  if (modal) modal.classList.remove('hidden');
+}
+
+function closeTestimonialModal() {
+  const modal = document.getElementById('testimonial-form-modal');
+  const form = document.getElementById('testimonial-form');
+  if (form) {
+    form.reset();
+    form.removeAttribute('data-editing-id');
+  }
+  currentTestimonialImage = '';
+  const imagePreview = document.getElementById('testimonial-image-preview');
+  if (imagePreview) imagePreview.innerHTML = '';
+  if (modal) modal.classList.add('hidden');
+}
+
+function renderTestimonialImagePreview() {
+  const previewContainer = document.getElementById('testimonial-image-preview');
+  if (!previewContainer) return;
+  previewContainer.innerHTML = '';
+  if (currentTestimonialImage) {
+    const wrapper = document.createElement('div');
+    wrapper.style.position = 'relative';
+    wrapper.style.display = 'inline-block';
+    wrapper.style.margin = '5px';
+
+    const img = document.createElement('img');
+    img.src = currentTestimonialImage;
+    img.style.width = '100px';
+    img.style.height = '100px';
+    img.style.objectFit = 'cover';
+    img.style.borderRadius = '50%';
+
+    const removeBtn = document.createElement('button');
+    removeBtn.innerHTML = '×';
+    removeBtn.className = 'btn btn-danger btn-small';
+    removeBtn.style.position = 'absolute';
+    removeBtn.style.top = '0';
+    removeBtn.style.right = '0';
+    removeBtn.style.padding = '2px 6px';
+    removeBtn.onclick = (e) => {
+      e.preventDefault();
+      currentTestimonialImage = '';
+      renderTestimonialImagePreview();
+    };
+
+    wrapper.appendChild(img);
+    wrapper.appendChild(removeBtn);
+    previewContainer.appendChild(wrapper);
+  }
+}
+
+async function handleTestimonialSubmit(e) {
+  e.preventDefault();
+
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Kaydediliyor...';
+  }
+
+  try {
+    const fileInput = document.getElementById('testimonial-image-input');
+    if (fileInput && fileInput.files.length > 0) {
+      currentTestimonialImage = await compressImage(fileInput.files[0]);
+    }
+
+    const data = {
+      title: document.getElementById('testimonial-title').value,
+      description: document.getElementById('testimonial-description').value,
+      image: currentTestimonialImage
+    };
+
+    const form = document.getElementById('testimonial-form');
+    const editingId = form.getAttribute('data-editing-id');
+
+    if (editingId) {
+      await window.Storage.updateTestimonial(editingId, data);
+      showToast('Yorum güncellendi');
+    } else {
+      await window.Storage.addTestimonial(data);
+      showToast('Yeni yorum eklendi');
+    }
+
+    closeTestimonialModal();
+    if (window.App) await window.App.renderTestimonials();
+  } catch (error) {
+    console.error('Testimonial kaydetme hatası:', error);
+    showToast('Bir hata oluştu!', 'error');
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Kaydet';
+    }
+  }
+}
+
+async function confirmDeleteTestimonial(id) {
+  const modal = document.getElementById('testimonial-delete-modal');
+  const confirmBtn = document.getElementById('testimonial-delete-confirm');
+  if (modal && confirmBtn) {
+    modal.classList.remove('hidden');
+    confirmBtn.onclick = async () => {
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Siliniyor...';
+      try {
+        await window.Storage.deleteTestimonial(id);
+        modal.classList.add('hidden');
+        if (window.App) await window.App.renderTestimonials();
+        showToast('Yorum silindi');
+      } catch (error) {
+        console.error('Testimonial silme hatası:', error);
+        showToast('Silme işlemi başarısız!', 'error');
+      } finally {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Evet, Sil';
+      }
+    };
+  }
+}
+
+window.Admin = { setupAdminEvents, login, logout, isLoggedIn, openFormModal, confirmDelete, showToast, openTestimonialModal, confirmDeleteTestimonial };

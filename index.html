@@ -105,6 +105,30 @@
         </div>
     </section>
 
+    <!-- MÜŞTERİ MEMNUNİYETİ SECTION -->
+    <section id="testimonials-section" class="section testimonials-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title" style="color: white;">Müşteri Memnuniyeti</h2>
+                <button id="testimonial-add-btn" class="btn btn-primary admin-only hidden">
+                    <span>＋</span> Yeni Yorum Ekle
+                </button>
+            </div>
+
+            <!-- TESTIMONIAL GRİD -->
+            <div id="testimonials-grid" class="testimonials-grid">
+                <!-- Testimonial kartları JavaScript ile render edilecek -->
+            </div>
+
+            <!-- BOŞ DURUM -->
+            <div id="testimonials-empty" class="empty-state hidden">
+                <div class="empty-icon">💬</div>
+                <h3 style="color: rgba(255,255,255,0.7);">Henüz yorum bulunmuyor</h3>
+                <p style="color: rgba(255,255,255,0.4);">Yakında müşteri yorumları eklenecektir.</p>
+            </div>
+        </div>
+    </section>
+
     <!-- İLETİŞİM SECTION -->
     <section id="contact-section" class="section section-alt">
         <div class="container">
@@ -307,6 +331,56 @@
         </div>
     </div>
 
+    <!-- TESTIMONIAL FORM MODALI -->
+    <div id="testimonial-form-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-large" style="max-width: 600px;">
+            <button class="modal-close" aria-label="Kapat">&times;</button>
+            <div class="modal-header">
+                <h3 id="testimonial-form-title">Yeni Müşteri Yorumu Ekle</h3>
+            </div>
+            <div class="modal-body">
+                <form id="testimonial-form" novalidate>
+                    <div class="form-group">
+                        <label class="form-label" for="testimonial-title">Başlık (Müşteri Adı) *</label>
+                        <input type="text" id="testimonial-title" class="form-input" placeholder="Örn: Ahmet Yılmaz" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="testimonial-description">Açıklama / Yorum *</label>
+                        <textarea id="testimonial-description" class="form-input form-textarea" rows="4" placeholder="Müşteri yorumunu yazın..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="testimonial-image-input">Fotoğraf</label>
+                        <input type="file" id="testimonial-image-input" class="form-input form-file" accept="image/*">
+                        <div id="testimonial-image-preview" class="image-preview"></div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="testimonial-form-cancel" class="btn btn-ghost">İptal</button>
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- TESTIMONIAL SİLME ONAY MODALI -->
+    <div id="testimonial-delete-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <div class="modal-icon">⚠️</div>
+                <h3>Yorumu Sil</h3>
+            </div>
+            <div class="modal-body">
+                <p style="text-align: center; color: #86868B; margin-bottom: 24px;">Bu yorumu silmek istediğinizden emin misiniz?<br>Bu işlem geri alınamaz.</p>
+                <div class="form-actions" style="justify-content: center;">
+                    <button id="testimonial-delete-cancel" class="btn btn-ghost">İptal</button>
+                    <button id="testimonial-delete-confirm" class="btn btn-danger">Evet, Sil</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- TOAST BİLDİRİM CONTAINER -->
     <div id="toast-container"></div>
 
@@ -316,8 +390,8 @@
 
     <!-- SCRIPTS (sıralı yükleme) -->
     <script src="js/firebase-config.js?v=1"></script>
-    <script src="js/storage.js?v=4"></script>
-    <script src="js/admin.js?v=4"></script>
-    <script src="js/app.js?v=4"></script>
+    <script src="js/storage.js?v=5"></script>
+    <script src="js/admin.js?v=5"></script>
+    <script src="js/app.js?v=5"></script>
 </body>
 </html>

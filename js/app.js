@@ -271,12 +271,78 @@ function setupEventListeners() {
   });
 }
 
+// ==================== TESTIMONIALS ====================
+
+function createTestimonialCardHTML(testimonial) {
+  const adminHTML = window.Admin.isLoggedIn() ? `
+    <div class="testimonial-admin-actions">
+      <button class="btn btn-small btn-ghost testimonial-edit-btn" data-id="${testimonial.id}">✏️ Düzenle</button>
+      <button class="btn btn-small btn-danger testimonial-delete-btn" data-id="${testimonial.id}">🗑️ Sil</button>
+    </div>` : '';
+
+  return `
+    <div class="testimonial-card" data-id="${testimonial.id}">
+      <div class="testimonial-image-wrapper">
+        ${testimonial.image 
+          ? `<img src="${testimonial.image}" alt="${testimonial.title}" class="testimonial-image" loading="lazy">` 
+          : `<div class="testimonial-image-placeholder">👤</div>`}
+      </div>
+      <h3 class="testimonial-name">${testimonial.title}</h3>
+      <p class="testimonial-text">${testimonial.description}</p>
+      ${adminHTML}
+    </div>
+  `;
+}
+
+async function renderTestimonials() {
+  const grid = document.getElementById('testimonials-grid');
+  const emptyState = document.getElementById('testimonials-empty');
+  if (!grid) return;
+
+  grid.innerHTML = `
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Yorumlar yükleniyor...</p>
+    </div>
+  `;
+
+  const testimonials = await window.Storage.getTestimonials();
+
+  grid.innerHTML = testimonials.map(t => createTestimonialCardHTML(t)).join('');
+
+  if (emptyState) {
+    if (testimonials.length === 0) {
+      emptyState.classList.remove('hidden');
+    } else {
+      emptyState.classList.add('hidden');
+    }
+  }
+}
+
+function setupTestimonialEvents() {
+  const grid = document.getElementById('testimonials-grid');
+  if (grid) {
+    grid.addEventListener('click', (e) => {
+      const editBtn = e.target.closest('.testimonial-edit-btn');
+      const deleteBtn = e.target.closest('.testimonial-delete-btn');
+
+      if (editBtn) {
+        window.Admin.openTestimonialModal(editBtn.getAttribute('data-id'));
+      } else if (deleteBtn) {
+        window.Admin.confirmDeleteTestimonial(deleteBtn.getAttribute('data-id'));
+      }
+    });
+  }
+}
+
 async function init() {
   setupEventListeners();
+  setupTestimonialEvents();
   if (window.Admin) window.Admin.setupAdminEvents();
   await renderListings();
+  await renderTestimonials();
 }
 
 document.addEventListener('DOMContentLoaded', init);
 
-window.App = { renderListings, openListingModal, formatPrice, init };
+window.App = { renderListings, openListingModal, formatPrice, init, renderTestimonials };
