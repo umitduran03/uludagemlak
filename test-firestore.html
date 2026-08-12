@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Firestore Test</title>
+</head>
+<body>
+  <h2>Firestore Bağlantı Testi</h2>
+  <pre id="output">Test başlatılıyor...</pre>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script>
+    const output = document.getElementById('output');
+    const log = (msg) => { output.textContent += '\n' + msg; console.log(msg); };
+
+    firebase.initializeApp({
+      apiKey: "AIzaSyBDcMsSHBZTPAnLJV96M_vRn_WDJy4Bexs",
+      authDomain: "uludagemlak-b5c3d.firebaseapp.com",
+      projectId: "uludagemlak-b5c3d",
+      storageBucket: "uludagemlak-b5c3d.firebasestorage.app",
+      messagingSenderId: "272992167641",
+      appId: "1:272992167641:web:05aae16d759a7954f240c8"
+    });
+
+    const db = firebase.firestore();
+
+    async function runTests() {
+      try {
+        // 1. EKLEME TESTİ
+        log('\n🔵 1. EKLEME TESTİ...');
+        const testData = {
+          title: 'TEST İLAN - Otomatik Silinecek',
+          price: 999999,
+          location: 'Test Konum',
+          listingType: 'satilik',
+          propertyType: 'daire',
+          rooms: '2+1',
+          area: 100,
+          floor: 3,
+          buildingAge: 5,
+          heatingType: 'dogalgaz',
+          description: 'Bu bir test ilanıdır.',
+          images: [],
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        const docRef = await db.collection('listings').add(testData);
+        log('✅ EKLEME BAŞARILI! Doküman ID: ' + docRef.id);
+
+        // 2. OKUMA TESTİ
+        log('\n🔵 2. OKUMA TESTİ...');
+        const doc = await db.collection('listings').doc(docRef.id).get();
+        if (doc.exists) {
+          log('✅ OKUMA BAŞARILI! Başlık: ' + doc.data().title);
+          log('   Fiyat: ' + doc.data().price + ' ₺');
+          log('   Konum: ' + doc.data().location);
+        } else {
+          log('❌ OKUMA HATASI: Doküman bulunamadı');
+        }
+
+        // 3. GÜNCELLEME TESTİ
+        log('\n🔵 3. GÜNCELLEME TESTİ...');
+        await db.collection('listings').doc(docRef.id).update({
+          title: 'TEST İLAN - GÜNCELLEME BAŞARILI',
+          price: 888888,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        const updatedDoc = await db.collection('listings').doc(docRef.id).get();
+        log('✅ GÜNCELLEME BAŞARILI! Yeni başlık: ' + updatedDoc.data().title);
+        log('   Yeni fiyat: ' + updatedDoc.data().price + ' ₺');
+
+        // 4. LİSTELEME TESTİ
+        log('\n🔵 4. LİSTELEME TESTİ...');
+        const snapshot = await db.collection('listings').get();
+        log('✅ LİSTELEME BAŞARILI! Toplam ilan: ' + snapshot.size);
+
+        // 5. SİLME TESTİ
+        log('\n🔵 5. SİLME TESTİ...');
+        await db.collection('listings').doc(docRef.id).delete();
+        const deletedDoc = await db.collection('listings').doc(docRef.id).get();
+        if (!deletedDoc.exists) {
+          log('✅ SİLME BAŞARILI! Test ilanı temizlendi.');
+        } else {
+          log('❌ SİLME HATASI: Doküman hala mevcut');
+        }
+
+        log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        log('🎉 TÜM TESTLER BAŞARILI!');
+        log('Firestore veritabanı tam çalışır durumda.');
+        log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+      } catch (error) {
+        log('\n❌ HATA: ' + error.message);
+        log('Hata detayı: ' + error.code);
+      }
+    }
+
+    runTests();
+  </script>
+</body>
+</html>

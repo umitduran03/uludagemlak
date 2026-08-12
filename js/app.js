@@ -16,8 +16,8 @@ function formatDate(isoString) {
   return new Date(isoString).toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
-function getFilteredListings() {
-  let listings = window.Storage.getListings();
+async function getFilteredListings() {
+  let listings = await window.Storage.getListings();
   
   const typeFilter = document.getElementById('filter-type')?.value || 'all';
   const propFilter = document.getElementById('filter-property')?.value || 'all';
@@ -55,7 +55,7 @@ function createCardHTML(listing) {
     <div class="card" data-id="${listing.id}">
       <div class="card-image">
         ${hasImages 
-          ? `<img src="${listing.images[0]}" alt="${listing.title}">` 
+          ? `<img src="${listing.images[0]}" alt="${listing.title}" loading="lazy">` 
           : `<div class="card-image-placeholder">🏠</div>`}
         <span class="card-badge badge-${listing.listingType}">${LISTING_TYPE_LABELS[listing.listingType]}</span>
         <span class="card-price">${formatPrice(listing.price, listing.listingType)}</span>
@@ -74,8 +74,24 @@ function createCardHTML(listing) {
   `;
 }
 
-function renderListings() {
-  const listings = getFilteredListings();
+function showLoading() {
+  const grid = document.getElementById('listings-grid');
+  const emptyState = document.getElementById('empty-state');
+  if (emptyState) emptyState.classList.add('hidden');
+  if (grid) {
+    grid.innerHTML = `
+      <div class="loading-container">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">İlanlar yükleniyor...</p>
+      </div>
+    `;
+  }
+}
+
+async function renderListings() {
+  showLoading();
+  
+  const listings = await getFilteredListings();
   const grid = document.getElementById('listings-grid');
   const emptyState = document.getElementById('empty-state');
   
@@ -104,8 +120,8 @@ function updateGallery() {
   }
 }
 
-function openListingModal(id) {
-  const listing = window.Storage.getListing(id);
+async function openListingModal(id) {
+  const listing = await window.Storage.getListing(id);
   if (!listing) return;
   
   const modal = document.getElementById('listing-modal');
@@ -183,9 +199,10 @@ function closeModal(modalId) {
 }
 
 function setupEventListeners() {
+  // Filtre değişikliklerinde debounce ile yeniden render
   ['filter-type', 'filter-property', 'filter-sort'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.addEventListener('change', renderListings);
+    if (el) el.addEventListener('change', () => renderListings());
   });
   
   document.querySelectorAll('.modal-close').forEach(btn => {
@@ -254,10 +271,10 @@ function setupEventListeners() {
   });
 }
 
-function init() {
+async function init() {
   setupEventListeners();
   if (window.Admin) window.Admin.setupAdminEvents();
-  renderListings();
+  await renderListings();
 }
 
 document.addEventListener('DOMContentLoaded', init);

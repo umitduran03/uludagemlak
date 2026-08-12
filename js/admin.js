@@ -37,7 +37,7 @@ function isLoggedIn() {
   return sessionStorage.getItem('uludagEmlak_admin') === 'true';
 }
 
-function compressImage(file, maxWidth = 800, quality = 0.7) {
+function compressImage(file, maxWidth = 600, quality = 0.5) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -56,7 +56,14 @@ function compressImage(file, maxWidth = 800, quality = 0.7) {
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', quality));
+        
+        // WebP destekleniyorsa WebP kullan, yoksa JPEG fallback
+        const webpData = canvas.toDataURL('image/webp', quality);
+        if (webpData.startsWith('data:image/webp')) {
+          resolve(webpData);
+        } else {
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        }
       };
       img.onerror = reject;
       img.src = event.target.result;
@@ -102,7 +109,7 @@ function renderImagePreview() {
   });
 }
 
-function openFormModal(listingId = null) {
+async function openFormModal(listingId = null) {
   const modal = document.getElementById('admin-form-modal');
   const form = document.getElementById('admin-form');
   const title = document.getElementById('admin-form-title');
@@ -113,7 +120,7 @@ function openFormModal(listingId = null) {
   if (listingId) {
     if(title) title.textContent = 'İlanı Düzenle';
     form.setAttribute('data-editing-id', listingId);
-    const listing = window.Storage.getListing(listingId);
+    const listing = await window.Storage.getListing(listingId);
     if (listing) {
       document.getElementById('form-title').value = listing.title || '';
       document.getElementById('form-price').value = listing.price || '';
@@ -152,55 +159,82 @@ function closeFormModal() {
 async function handleFormSubmit(e) {
   e.preventDefault();
   
-  const fileInput = document.getElementById('form-images');
-  if (fileInput && fileInput.files.length > 0) {
-    const files = Array.from(fileInput.files);
-    for (const file of files) {
-      const compressed = await compressImage(file);
-      currentImages.push(compressed);
+  // Kaydet butonunu devre dışı bırak
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Kaydediliyor...';
+  }
+  
+  try {
+    const fileInput = document.getElementById('form-images');
+    if (fileInput && fileInput.files.length > 0) {
+      const files = Array.from(fileInput.files);
+      for (const file of files) {
+        const compressed = await compressImage(file);
+        currentImages.push(compressed);
+      }
+    }
+    
+    const data = {
+      title: document.getElementById('form-title').value,
+      price: parseFloat(document.getElementById('form-price').value),
+      location: document.getElementById('form-location').value,
+      listingType: document.getElementById('form-listing-type').value,
+      propertyType: document.getElementById('form-property-type').value,
+      rooms: document.getElementById('form-rooms').value,
+      area: parseFloat(document.getElementById('form-area').value),
+      floor: parseInt(document.getElementById('form-floor').value) || 0,
+      buildingAge: parseInt(document.getElementById('form-building-age').value) || 0,
+      heatingType: document.getElementById('form-heating').value,
+      description: document.getElementById('form-description').value,
+      images: currentImages
+    };
+    
+    const form = document.getElementById('admin-form');
+    const editingId = form.getAttribute('data-editing-id');
+    
+    if (editingId) {
+      await window.Storage.updateListing(editingId, data);
+      showToast('İlan güncellendi');
+    } else {
+      await window.Storage.addListing(data);
+      showToast('Yeni ilan eklendi');
+    }
+    
+    closeFormModal();
+    if(window.App) await window.App.renderListings();
+  } catch (error) {
+    console.error('Form kaydetme hatası:', error);
+    showToast('Bir hata oluştu!', 'error');
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Kaydet';
     }
   }
-  
-  const data = {
-    title: document.getElementById('form-title').value,
-    price: parseFloat(document.getElementById('form-price').value),
-    location: document.getElementById('form-location').value,
-    listingType: document.getElementById('form-listing-type').value,
-    propertyType: document.getElementById('form-property-type').value,
-    rooms: document.getElementById('form-rooms').value,
-    area: parseFloat(document.getElementById('form-area').value),
-    floor: parseInt(document.getElementById('form-floor').value) || 0,
-    buildingAge: parseInt(document.getElementById('form-building-age').value) || 0,
-    heatingType: document.getElementById('form-heating').value,
-    description: document.getElementById('form-description').value,
-    images: currentImages
-  };
-  
-  const form = document.getElementById('admin-form');
-  const editingId = form.getAttribute('data-editing-id');
-  
-  if (editingId) {
-    window.Storage.updateListing(editingId, data);
-    showToast('İlan güncellendi');
-  } else {
-    window.Storage.addListing(data);
-    showToast('Yeni ilan eklendi');
-  }
-  
-  closeFormModal();
-  if(window.App) window.App.renderListings();
 }
 
-function confirmDelete(id) {
+async function confirmDelete(id) {
   const modal = document.getElementById('delete-modal');
   const confirmBtn = document.getElementById('delete-confirm');
   if (modal && confirmBtn) {
     modal.classList.remove('hidden');
-    confirmBtn.onclick = () => {
-      window.Storage.deleteListing(id);
-      modal.classList.add('hidden');
-      if(window.App) window.App.renderListings();
-      showToast('İlan silindi');
+    confirmBtn.onclick = async () => {
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Siliniyor...';
+      try {
+        await window.Storage.deleteListing(id);
+        modal.classList.add('hidden');
+        if(window.App) await window.App.renderListings();
+        showToast('İlan silindi');
+      } catch (error) {
+        console.error('Silme hatası:', error);
+        showToast('Silme işlemi başarısız!', 'error');
+      } finally {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Evet, Sil';
+      }
     };
   }
 }
@@ -257,7 +291,7 @@ function setupAdminEvents() {
       if(pwError) pwError.classList.add('hidden');
       pwInput.value = '';
       showToast('Giriş başarılı');
-      if(window.App) window.App.renderListings();
+      if(window.App) await window.App.renderListings();
     } else {
       if(pwError) pwError.classList.remove('hidden');
       if(pwInput) pwInput.focus();

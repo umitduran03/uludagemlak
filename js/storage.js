@@ -1,77 +1,89 @@
-const STORAGE_KEY = 'uludagEmlak_listings';
+// Firestore-based Storage Layer - Uludağ Emlak
+const COLLECTION_NAME = 'listings';
 
-function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2);
-}
-
-function getListings() {
+async function getListings() {
   try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
+    const snapshot = await window.db.collection(COLLECTION_NAME)
+      .orderBy('createdAt', 'desc')
+      .get();
+    
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      // Firestore Timestamp → ISO string dönüşümü
+      createdAt: doc.data().createdAt?.toDate?.() ? doc.data().createdAt.toDate().toISOString() : doc.data().createdAt,
+      updatedAt: doc.data().updatedAt?.toDate?.() ? doc.data().updatedAt.toDate().toISOString() : doc.data().updatedAt
+    }));
   } catch (e) {
-    console.error('Error parsing listings from localStorage', e);
+    console.error('Firestore getListings hatası:', e);
     return [];
   }
 }
 
-function saveListings(listings) {
+async function addListing(data) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(listings));
-  } catch (e) {
-    console.error('Error saving listings to localStorage', e);
-  }
-}
-
-function addListing(data) {
-  const listings = getListings();
-  const newListing = {
-    ...data,
-    id: generateId(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  };
-  listings.push(newListing);
-  saveListings(listings);
-  return newListing;
-}
-
-function updateListing(id, data) {
-  const listings = getListings();
-  const index = listings.findIndex(l => l.id === id);
-  if (index !== -1) {
-    listings[index] = {
-      ...listings[index],
+    const newListing = {
       ...data,
-      updatedAt: new Date().toISOString()
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
-    saveListings(listings);
-    return listings[index];
+    
+    const docRef = await window.db.collection(COLLECTION_NAME).add(newListing);
+    return { ...newListing, id: docRef.id };
+  } catch (e) {
+    console.error('Firestore addListing hatası:', e);
+    return null;
   }
-  return null;
 }
 
-function deleteListing(id) {
-  let listings = getListings();
-  const initialLength = listings.length;
-  listings = listings.filter(l => l.id !== id);
-  if (listings.length !== initialLength) {
-    saveListings(listings);
+async function updateListing(id, data) {
+  try {
+    const updateData = {
+      ...data,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    
+    await window.db.collection(COLLECTION_NAME).doc(id).update(updateData);
+    return { id, ...updateData };
+  } catch (e) {
+    console.error('Firestore updateListing hatası:', e);
+    return null;
+  }
+}
+
+async function deleteListing(id) {
+  try {
+    await window.db.collection(COLLECTION_NAME).doc(id).delete();
     return true;
+  } catch (e) {
+    console.error('Firestore deleteListing hatası:', e);
+    return false;
   }
-  return false;
 }
 
-function getListing(id) {
-  const listings = getListings();
-  return listings.find(l => l.id === id) || null;
+async function getListing(id) {
+  try {
+    const doc = await window.db.collection(COLLECTION_NAME).doc(id).get();
+    if (doc.exists) {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate?.() ? data.createdAt.toDate().toISOString() : data.createdAt,
+        updatedAt: data.updatedAt?.toDate?.() ? data.updatedAt.toDate().toISOString() : data.updatedAt
+      };
+    }
+    return null;
+  } catch (e) {
+    console.error('Firestore getListing hatası:', e);
+    return null;
+  }
 }
 
 window.Storage = { 
   getListings, 
-  saveListings, 
   addListing, 
   updateListing, 
   deleteListing, 
-  getListing, 
-  generateId 
+  getListing 
 };
