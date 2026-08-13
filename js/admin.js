@@ -1,21 +1,8 @@
-const ADMIN_PASSWORD_HASH = 'a9db1a046faf39014d57d36394b9c6c96a36ba6c69d9f52bcf13a6ecc78217d2'; // SHA-256 of 'uludag2026'
+const ADMIN_EMAIL = 'admin@uludagemlak.com';
 let currentImages = [];
 
-async function hashPassword(password) {
-  const msgUint8 = new TextEncoder().encode(password);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  return hashHex;
-}
-
-async function verifyPassword(password) {
-  const hash = await hashPassword(password);
-  return hash === ADMIN_PASSWORD_HASH;
-}
-
-function login() {
-  sessionStorage.setItem('uludagEmlak_admin', 'true');
+// Firebase Auth ile oturum yönetimi
+function showAdminUI() {
   const adminControls = document.getElementById('admin-controls');
   if(adminControls) adminControls.classList.remove('hidden');
   document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
@@ -23,18 +10,29 @@ function login() {
   document.body.classList.add('admin-mode');
 }
 
-function logout() {
-  sessionStorage.removeItem('uludagEmlak_admin');
+function hideAdminUI() {
   const adminControls = document.getElementById('admin-controls');
   if(adminControls) adminControls.classList.add('hidden');
   document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
   document.querySelectorAll('.card-admin-actions').forEach(el => el.classList.add('hidden'));
   document.body.classList.remove('admin-mode');
-  if(window.App) window.App.renderListings();
+}
+
+async function logout() {
+  try {
+    await window.auth.signOut();
+    hideAdminUI();
+    if(window.App) {
+      window.App.renderListings();
+      window.App.renderTestimonials();
+    }
+  } catch (e) {
+    console.error('Logout hatası:', e);
+  }
 }
 
 function isLoggedIn() {
-  return sessionStorage.getItem('uludagEmlak_admin') === 'true';
+  return !!window.auth.currentUser;
 }
 
 function compressImage(file, maxWidth = 600, quality = 0.5) {
@@ -191,6 +189,13 @@ async function handleFormSubmit(e) {
       images: currentImages
     };
     
+    // Firestore 1MB doküman limiti kontrolü
+    const dataSize = new Blob([JSON.stringify(data)]).size;
+    if (dataSize > 900000) {
+      showToast('Toplam veri boyutu çok büyük! Lütfen daha az veya küçük fotoğraf ekleyin.', 'error');
+      return;
+    }
+    
     const form = document.getElementById('admin-form');
     const editingId = form.getAttribute('data-editing-id');
     
@@ -283,18 +288,42 @@ function setupAdminEvents() {
   }
   
   const pwError = document.getElementById('password-error');
+  const emailInput = document.getElementById('email-input');
 
   const handleLogin = async () => {
-    if (pwInput && await verifyPassword(pwInput.value)) {
-      login();
+    const password = pwInput ? pwInput.value : '';
+    
+    if (!password) {
+      if(pwError) pwError.classList.remove('hidden');
+      return;
+    }
+    
+    // Giriş butonunu devre dışı bırak
+    if(pwSubmit) {
+      pwSubmit.disabled = true;
+      pwSubmit.textContent = 'Giriş yapılıyor...';
+    }
+    
+    try {
+      await window.auth.signInWithEmailAndPassword(ADMIN_EMAIL, password);
+      showAdminUI();
       if(pwModal) pwModal.classList.add('hidden');
       if(pwError) pwError.classList.add('hidden');
-      pwInput.value = '';
+      if(pwInput) pwInput.value = '';
       showToast('Giriş başarılı');
-      if(window.App) await window.App.renderListings();
-    } else {
+      if(window.App) {
+        await window.App.renderListings();
+        await window.App.renderTestimonials();
+      }
+    } catch (error) {
+      console.error('Giriş hatası:', error.code);
       if(pwError) pwError.classList.remove('hidden');
       if(pwInput) pwInput.focus();
+    } finally {
+      if(pwSubmit) {
+        pwSubmit.disabled = false;
+        pwSubmit.textContent = 'Giriş Yap';
+      }
     }
   };
   
@@ -306,6 +335,15 @@ function setupAdminEvents() {
   if (logoutBtn) logoutBtn.addEventListener('click', () => {
     logout();
     showToast('Çıkış yapıldı');
+  });
+
+  // Firebase Auth durum değişikliğini dinle (sayfa yenilenince oturumu koru)
+  window.auth.onAuthStateChanged((user) => {
+    if (user) {
+      showAdminUI();
+    } else {
+      hideAdminUI();
+    }
   });
   
   if (addBtn) addBtn.addEventListener('click', () => openFormModal());
@@ -499,4 +537,4 @@ async function confirmDeleteTestimonial(id) {
   }
 }
 
-window.Admin = { setupAdminEvents, login, logout, isLoggedIn, openFormModal, confirmDelete, showToast, openTestimonialModal, confirmDeleteTestimonial };
+window.Admin = { setupAdminEvents, logout, isLoggedIn, openFormModal, confirmDelete, showToast, openTestimonialModal, confirmDeleteTestimonial };

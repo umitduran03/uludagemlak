@@ -16,5 +16,9 @@ firebase.initializeApp(firebaseConfig);
 // Firestore referansı
 const db = firebase.firestore();
 
+// Auth referansı
+const auth = firebase.auth();
+
 // Global erişim
 window.db = db;
+window.auth = auth;

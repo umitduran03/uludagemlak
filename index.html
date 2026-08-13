@@ -23,6 +23,7 @@
             <div id="nav-links" class="nav-links">
                 <a href="#hero" class="nav-link">Ana Sayfa</a>
                 <a href="#listings-section" class="nav-link">İlanlar</a>
+                <a href="#testimonials-section" class="nav-link">Memnuniyet</a>
                 <a href="#contact-section" class="nav-link">İletişim</a>
             </div>
             <div id="admin-controls" class="admin-controls hidden">
@@ -170,7 +171,7 @@
         </div>
     </footer>
 
-    <!-- ŞİFRE MODALI -->
+    <!-- GİRİŞ MODALI -->
     <div id="password-modal" class="modal hidden">
         <div class="modal-overlay"></div>
         <div class="modal-content modal-small">
@@ -183,7 +184,7 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label class="form-label" for="password-input">Şifre</label>
-                    <input type="password" id="password-input" class="form-input" placeholder="••••••••" autocomplete="off">
+                    <input type="password" id="password-input" class="form-input" placeholder="••••••••" autocomplete="current-password">
                     <p id="password-error" class="form-error hidden">Yanlış şifre. Lütfen tekrar deneyin.</p>
                 </div>
                 <button id="password-submit" class="btn btn-primary btn-full">Giriş Yap</button>
@@ -387,11 +388,12 @@
     <!-- Firebase SDK (CDN compat) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
     <!-- SCRIPTS (sıralı yükleme) -->
-    <script src="js/firebase-config.js?v=1"></script>
-    <script src="js/storage.js?v=5"></script>
-    <script src="js/admin.js?v=5"></script>
-    <script src="js/app.js?v=6"></script>
+    <script src="js/firebase-config.js?v=2"></script>
+    <script src="js/storage.js?v=7"></script>
+    <script src="js/admin.js?v=7"></script>
+    <script src="js/app.js?v=8"></script>
 </body>
 </html>

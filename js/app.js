@@ -5,6 +5,14 @@ const HEATING_TYPE_LABELS = { dogalgaz: 'Doğalgaz', kombi: 'Kombi', soba: 'Soba
 let currentListingImages = [];
 let currentImageIndex = 0;
 
+// XSS Koruması — kullanıcı verilerini HTML'e enjekte etmeden önce temizler
+function escapeHTML(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = String(str);
+  return div.innerHTML;
+}
+
 function formatPrice(price, listingType) {
   const formatted = new Intl.NumberFormat('tr-TR').format(price) + ' ₺';
   if (listingType === 'kiralik') return formatted + '/ay';
@@ -55,18 +63,18 @@ function createCardHTML(listing) {
     <div class="card" data-id="${listing.id}">
       <div class="card-image">
         ${hasImages 
-          ? `<img src="${listing.images[0]}" alt="${listing.title}" loading="lazy">` 
+          ? `<img src="${listing.images[0]}" alt="${escapeHTML(listing.title)}" loading="lazy">` 
           : `<div class="card-image-placeholder">🏠</div>`}
-        <span class="card-badge badge-${listing.listingType}">${LISTING_TYPE_LABELS[listing.listingType]}</span>
+        <span class="card-badge badge-${listing.listingType}">${LISTING_TYPE_LABELS[listing.listingType] || ''}</span>
         <span class="card-price">${formatPrice(listing.price, listing.listingType)}</span>
       </div>
       <div class="card-info">
-        <h3 class="card-title">${listing.title}</h3>
-        <p class="card-location">📍 ${listing.location}</p>
+        <h3 class="card-title">${escapeHTML(listing.title)}</h3>
+        <p class="card-location">📍 ${escapeHTML(listing.location)}</p>
         <div class="card-features">
-          ${listing.rooms ? `<div class="card-feature"><span>${listing.rooms}</span><span>Oda</span></div>` : ''}
-          ${listing.area ? `<div class="card-feature"><span>${listing.area} m²</span><span>Alan</span></div>` : ''}
-          ${listing.floor ? `<div class="card-feature"><span>${listing.floor}.</span><span>Kat</span></div>` : ''}
+          ${listing.rooms ? `<div class="card-feature"><span>${escapeHTML(listing.rooms)}</span><span>Oda</span></div>` : ''}
+          ${listing.area ? `<div class="card-feature"><span>${escapeHTML(listing.area)} m²</span><span>Alan</span></div>` : ''}
+          ${listing.floor ? `<div class="card-feature"><span>${escapeHTML(listing.floor)}.</span><span>Kat</span></div>` : ''}
         </div>
       </div>
       ${adminHTML}
@@ -140,7 +148,7 @@ async function openListingModal(id) {
   body.innerHTML = `
     <div class="detail-gallery">
       ${currentListingImages.length > 0 
-        ? `<img id="modal-gallery-img" src="${currentListingImages[0]}" alt="${listing.title}">` 
+        ? `<img id="modal-gallery-img" src="${currentListingImages[0]}" alt="${escapeHTML(listing.title)}">` 
         : `<div class="card-image-placeholder" style="height:400px;font-size:4rem">🏠</div>`}
       ${currentListingImages.length > 1 ? `
       <button class="gallery-nav gallery-prev" id="modal-prev-btn">❮</button>
@@ -151,24 +159,24 @@ async function openListingModal(id) {
     <div class="detail-content">
       <div class="detail-header">
         <div class="detail-badges">
-          <span class="card-badge badge-${listing.listingType}">${LISTING_TYPE_LABELS[listing.listingType]}</span>
-          ${listing.propertyType ? `<span class="card-badge" style="background:#8E8E93">${PROPERTY_TYPE_LABELS[listing.propertyType] || listing.propertyType}</span>` : ''}
+          <span class="card-badge badge-${listing.listingType}">${LISTING_TYPE_LABELS[listing.listingType] || ''}</span>
+          ${listing.propertyType ? `<span class="card-badge" style="background:#8E8E93">${PROPERTY_TYPE_LABELS[listing.propertyType] || escapeHTML(listing.propertyType)}</span>` : ''}
         </div>
-        <h2 class="detail-title">${listing.title}</h2>
-        <p class="detail-location">📍 ${listing.location}</p>
+        <h2 class="detail-title">${escapeHTML(listing.title)}</h2>
+        <p class="detail-location">📍 ${escapeHTML(listing.location)}</p>
       </div>
       <p class="detail-price">${formatPrice(listing.price, listing.listingType)}</p>
       
       <div class="detail-specs">
-        ${listing.propertyType ? `<div class="spec-item"><span class="spec-label">Emlak Tipi</span><span class="spec-value">${PROPERTY_TYPE_LABELS[listing.propertyType] || listing.propertyType}</span></div>` : ''}
-        ${listing.rooms ? `<div class="spec-item"><span class="spec-label">Oda Sayısı</span><span class="spec-value">${listing.rooms}</span></div>` : ''}
-        ${listing.area ? `<div class="spec-item"><span class="spec-label">Brüt Alan</span><span class="spec-value">${listing.area} m²</span></div>` : ''}
-        ${listing.floor ? `<div class="spec-item"><span class="spec-label">Bulunduğu Kat</span><span class="spec-value">${listing.floor}</span></div>` : ''}
-        ${listing.buildingAge ? `<div class="spec-item"><span class="spec-label">Bina Yaşı</span><span class="spec-value">${listing.buildingAge} Yıl</span></div>` : ''}
-        ${listing.heatingType ? `<div class="spec-item"><span class="spec-label">Isıtma</span><span class="spec-value">${HEATING_TYPE_LABELS[listing.heatingType] || listing.heatingType}</span></div>` : ''}
+        ${listing.propertyType ? `<div class="spec-item"><span class="spec-label">Emlak Tipi</span><span class="spec-value">${PROPERTY_TYPE_LABELS[listing.propertyType] || escapeHTML(listing.propertyType)}</span></div>` : ''}
+        ${listing.rooms ? `<div class="spec-item"><span class="spec-label">Oda Sayısı</span><span class="spec-value">${escapeHTML(listing.rooms)}</span></div>` : ''}
+        ${listing.area ? `<div class="spec-item"><span class="spec-label">Brüt Alan</span><span class="spec-value">${escapeHTML(listing.area)} m²</span></div>` : ''}
+        ${listing.floor ? `<div class="spec-item"><span class="spec-label">Bulunduğu Kat</span><span class="spec-value">${escapeHTML(listing.floor)}</span></div>` : ''}
+        ${listing.buildingAge ? `<div class="spec-item"><span class="spec-label">Bina Yaşı</span><span class="spec-value">${escapeHTML(listing.buildingAge)} Yıl</span></div>` : ''}
+        ${listing.heatingType ? `<div class="spec-item"><span class="spec-label">Isıtma</span><span class="spec-value">${HEATING_TYPE_LABELS[listing.heatingType] || escapeHTML(listing.heatingType)}</span></div>` : ''}
       </div>
       
-      ${listing.description ? `<div class="detail-description">${listing.description.replace(/\n/g, '<br>')}</div>` : ''}
+      ${listing.description ? `<div class="detail-description">${escapeHTML(listing.description).replace(/\n/g, '<br>')}</div>` : ''}
       
       <div class="detail-actions" style="flex-direction: column; gap: 12px;">
         <p style="font-size: 0.85rem; color: #86868B; margin: 0;">Ercan ULUDAĞ</p>
@@ -288,8 +296,8 @@ function createTestimonialCardHTML(testimonial) {
           : `<div class="testimonial-image-placeholder">👤</div>`}
       </div>
       <div class="testimonial-card-content">
-        <h3 class="testimonial-name">${testimonial.title}</h3>
-        <p class="testimonial-text">${testimonial.description}</p>
+        <h3 class="testimonial-name">${escapeHTML(testimonial.title)}</h3>
+        <p class="testimonial-text">${escapeHTML(testimonial.description)}</p>
         ${adminHTML}
       </div>
     </div>
