@@ -287,9 +287,11 @@ function createTestimonialCardHTML(testimonial) {
           ? `<img src="${testimonial.image}" alt="${testimonial.title}" class="testimonial-image" loading="lazy">` 
           : `<div class="testimonial-image-placeholder">👤</div>`}
       </div>
-      <h3 class="testimonial-name">${testimonial.title}</h3>
-      <p class="testimonial-text">${testimonial.description}</p>
-      ${adminHTML}
+      <div class="testimonial-card-content">
+        <h3 class="testimonial-name">${testimonial.title}</h3>
+        <p class="testimonial-text">${testimonial.description}</p>
+        ${adminHTML}
+      </div>
     </div>
   `;
 }
