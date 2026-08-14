@@ -268,7 +268,6 @@ function showToast(message, type = 'success') {
 }
 
 function setupAdminEvents() {
-  if (isLoggedIn()) login();
   
   const logoBtn = document.getElementById('logo-btn');
   const pwModal = document.getElementById('password-modal');
