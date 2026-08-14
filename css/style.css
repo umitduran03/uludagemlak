@@ -91,7 +91,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 72px;
+  min-height: 90px;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
@@ -116,8 +116,10 @@ body {
   opacity: 0.8;
 }
 
-.logo-icon {
-  font-size: 1.5rem;
+.logo-img {
+  height: 90px;
+  width: auto;
+  object-fit: contain;
 }
 
 .nav-links {
@@ -181,7 +183,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at center, #1c1c1e 0%, #000000 100%);
+  background-color: #000000;
+  background-image: 
+    radial-gradient(at 15% 20%, rgba(0, 113, 227, 0.2) 0px, transparent 50vw),
+    radial-gradient(at 85% 85%, rgba(0, 113, 227, 0.12) 0px, transparent 50vw),
+    radial-gradient(circle at center, #1c1c1e 0%, #000000 100%);
   position: relative;
   overflow: hidden;
 }
@@ -836,7 +842,49 @@ body {
 
 /* TESTIMONIALS SECTION */
 .testimonials-section {
-  background: radial-gradient(ellipse at top, #1c1c1e 0%, #000000 100%);
+  background-color: #000000;
+  background-image: 
+    radial-gradient(at 15% 20%, rgba(0, 113, 227, 0.2) 0px, transparent 50vw),
+    radial-gradient(at 85% 85%, rgba(0, 113, 227, 0.12) 0px, transparent 50vw),
+    radial-gradient(circle at center, #1c1c1e 0%, #000000 100%);
+}
+
+.testimonials-wrapper {
+  position: relative;
+}
+
+.testimonial-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  transition: all var(--transition-base);
+}
+
+.testimonial-nav:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.testimonial-nav-prev {
+  left: -60px;
+}
+
+.testimonial-nav-next {
+  right: -60px;
 }
 
 .testimonials-grid {

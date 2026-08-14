@@ -343,6 +343,21 @@ function setupTestimonialEvents() {
       }
     });
   }
+
+  // Ok butonları ile kaydırma
+  const prevBtn = document.getElementById('testimonial-prev');
+  const nextBtn = document.getElementById('testimonial-next');
+
+  if (prevBtn && grid) {
+    prevBtn.addEventListener('click', () => {
+      grid.scrollBy({ left: -340, behavior: 'smooth' });
+    });
+  }
+  if (nextBtn && grid) {
+    nextBtn.addEventListener('click', () => {
+      grid.scrollBy({ left: 340, behavior: 'smooth' });
+    });
+  }
 }
 
 async function init() {
