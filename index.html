@@ -1,20 +1,91 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uludağ Emlak | Hayalinizdeki Evi Bulun</title>
-    <meta name="description" content="Uludağ Emlak - Güvenilir ve profesyonel emlak hizmeti. Satılık, kiralık daire, villa, arsa ve daha fazlası.">
-    <meta name="keywords" content="emlak, satılık daire, kiralık daire, villa, arsa, Uludağ Emlak">
+
+    <!-- SEO Temel Meta Etiketleri -->
+    <title>Uludağ Emlak | Sandıklı'da Satılık & Kiralık Emlak İlanları</title>
+    <meta name="description" content="Afyonkarahisar Sandıklı'da satılık daire, kiralık daire, villa, arsa ve müstakil ev ilanları. Uludağ Emlak ile güvenilir ve profesyonel emlak hizmeti. Hemen ilanları inceleyin.">
+    <meta name="keywords" content="Sandıklı emlak, Afyonkarahisar emlak, satılık daire Sandıklı, kiralık daire Sandıklı, satılık arsa, villa, müstakil ev, Uludağ Emlak, emlak ilanları, günlük kiralık">
+    <meta name="author" content="Uludağ Emlak">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+    <meta name="googlebot" content="index, follow">
+    <link rel="canonical" href="https://uludagemlak.com/">
+
+    <!-- Bölge ve Dil -->
+    <meta name="geo.region" content="TR-03">
+    <meta name="geo.placename" content="Sandıklı, Afyonkarahisar">
+    <meta name="language" content="Turkish">
+    <meta http-equiv="content-language" content="tr">
+
+    <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Uludağ Emlak | Sandıklı'da Satılık & Kiralık Emlak İlanları">
+    <meta property="og:description" content="Afyonkarahisar Sandıklı'da satılık daire, kiralık daire, villa, arsa ilanları. Güvenilir emlak hizmeti.">
+    <meta property="og:url" content="https://uludagemlak.com/">
+    <meta property="og:site_name" content="Uludağ Emlak">
+    <meta property="og:locale" content="tr_TR">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Uludağ Emlak | Sandıklı'da Emlak İlanları">
+    <meta name="twitter:description" content="Satılık & kiralık daire, villa, arsa ilanları. Güvenilir emlak hizmeti.">
+
+    <!-- Tema ve Mobil -->
+    <meta name="theme-color" content="#0071E3">
+    <meta name="apple-mobile-web-app-title" content="Uludağ Emlak">
+    <meta name="application-name" content="Uludağ Emlak">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- Preconnect & Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=4">
+    <link rel="stylesheet" href="css/style.css?v=5">
+
+    <!-- Yapısal Veri (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "RealEstateAgent",
+      "name": "Uludağ Emlak",
+      "description": "Afyonkarahisar Sandıklı'da satılık ve kiralık emlak ilanları. Daire, villa, arsa, müstakil ev.",
+      "url": "https://uludagemlak.com",
+      "telephone": ["+905324531171", "+905386322878"],
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Ece Mah. Fenerli Sok. No 3",
+        "addressLocality": "Sandıklı",
+        "addressRegion": "Afyonkarahisar",
+        "postalCode": "03500",
+        "addressCountry": "TR"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 38.4637,
+        "longitude": 30.2918
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+        "opens": "09:00",
+        "closes": "18:00"
+      },
+      "sameAs": [],
+      "areaServed": {
+        "@type": "City",
+        "name": "Sandıklı, Afyonkarahisar"
+      },
+      "priceRange": "₺₺"
+    }
+    </script>
 </head>
 <body>
 
     <!-- HEADER -->
-    <header id="header">
+    <header id="header" role="banner">
         <nav class="nav-container">
             <button id="logo-btn" class="logo-btn" title="Uludağ Emlak">
                 <span class="logo-icon">🏠</span>
@@ -38,8 +109,9 @@
         </nav>
     </header>
 
+    <main>
     <!-- HERO SECTION -->
-    <section id="hero" class="hero">
+    <section id="hero" class="hero" aria-label="Ana tanıtım">
         <div class="hero-content">
             <h1 class="hero-title">Hayalinizdeki<br>Evi Bulun</h1>
             <p class="hero-subtitle">Uludağ Emlak ile güvenilir ve profesyonel emlak hizmeti.<br>Satılık, kiralık ve günlük kiralık seçenekleriyle yanınızdayız.</p>
@@ -48,7 +120,7 @@
     </section>
 
     <!-- İLANLAR SECTION -->
-    <section id="listings-section" class="section">
+    <section id="listings-section" class="section" aria-label="Emlak ilanları">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Güncel İlanlar</h2>
@@ -131,7 +203,7 @@
     </section>
 
     <!-- İLETİŞİM SECTION -->
-    <section id="contact-section" class="section section-alt">
+    <section id="contact-section" class="section section-alt" aria-label="İletişim bilgileri">
         <div class="container">
             <h2 class="section-title" style="text-align: center; margin-bottom: 48px;">İletişim</h2>
             <div class="contact-grid">
@@ -163,11 +235,13 @@
             </div>
         </div>
     </section>
+    </main>
 
     <!-- FOOTER -->
-    <footer class="footer">
+    <footer class="footer" role="contentinfo">
         <div class="container">
-            <p>&copy; 2026 Uludağ Emlak. Tüm hakları saklıdır.</p>
+            <p>&copy; 2026 Uludağ Emlak — Sandıklı, Afyonkarahisar. Tüm hakları saklıdır.</p>
+            <p style="font-size: 0.75rem; opacity: 0.4; margin-top: 8px;">Satılık daire, kiralık daire, villa, arsa, müstakil ev ilanları</p>
         </div>
     </footer>
 

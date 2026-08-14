@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://uludagemlak.com/sitemap.xml
+
+# Yönetici dosyalarını engelle
+Disallow: /test-*
+Disallow: /.git/
