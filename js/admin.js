@@ -71,40 +71,123 @@ function compressImage(file, maxWidth = 600, quality = 0.5) {
   });
 }
 
+let dragSrcIndex = null;
+
 function renderImagePreview() {
   const previewContainer = document.getElementById('image-preview');
   if (!previewContainer) return;
   previewContainer.innerHTML = '';
+  
+  if (currentImages.length > 1) {
+    const hint = document.createElement('p');
+    hint.textContent = '↔ Fotoğrafları sürükleyerek veya oklarla sıralayın';
+    hint.style.cssText = 'font-size: 0.75rem; color: #86868B; margin-bottom: 8px; text-align: center;';
+    previewContainer.appendChild(hint);
+  }
+  
+  const grid = document.createElement('div');
+  grid.style.cssText = 'display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;';
+  
   currentImages.forEach((imgSrc, index) => {
     const wrapper = document.createElement('div');
-    wrapper.style.position = 'relative';
-    wrapper.style.display = 'inline-block';
-    wrapper.style.margin = '5px';
+    wrapper.style.cssText = 'position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: grab;';
+    wrapper.draggable = true;
+    wrapper.setAttribute('data-index', index);
+    
+    // Drag events
+    wrapper.addEventListener('dragstart', (e) => {
+      dragSrcIndex = index;
+      wrapper.style.opacity = '0.4';
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    
+    wrapper.addEventListener('dragend', () => {
+      wrapper.style.opacity = '1';
+      document.querySelectorAll('#image-preview [data-index]').forEach(el => {
+        el.style.border = '';
+      });
+    });
+    
+    wrapper.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      wrapper.style.border = '2px solid #0071E3';
+      wrapper.style.borderRadius = '10px';
+    });
+    
+    wrapper.addEventListener('dragleave', () => {
+      wrapper.style.border = '';
+    });
+    
+    wrapper.addEventListener('drop', (e) => {
+      e.preventDefault();
+      wrapper.style.border = '';
+      if (dragSrcIndex !== null && dragSrcIndex !== index) {
+        const moved = currentImages.splice(dragSrcIndex, 1)[0];
+        currentImages.splice(index, 0, moved);
+        renderImagePreview();
+      }
+    });
     
     const img = document.createElement('img');
     img.src = imgSrc;
-    img.style.width = '100px';
-    img.style.height = '100px';
-    img.style.objectFit = 'cover';
-    img.style.borderRadius = '8px';
+    img.style.cssText = 'width: 100px; height: 100px; object-fit: cover; border-radius: 8px; pointer-events: none;';
     
+    // Sıra numarası
+    const badge = document.createElement('span');
+    badge.textContent = index + 1;
+    badge.style.cssText = 'position: absolute; top: 4px; left: 4px; background: rgba(0,113,227,0.85); color: white; font-size: 0.65rem; font-weight: 700; padding: 2px 6px; border-radius: 4px;';
+    
+    // Sil butonu
     const removeBtn = document.createElement('button');
     removeBtn.innerHTML = '×';
     removeBtn.className = 'btn btn-danger btn-small';
-    removeBtn.style.position = 'absolute';
-    removeBtn.style.top = '0';
-    removeBtn.style.right = '0';
-    removeBtn.style.padding = '2px 6px';
+    removeBtn.style.cssText = 'position: absolute; top: 0; right: 0; padding: 2px 6px;';
     removeBtn.onclick = (e) => {
       e.preventDefault();
       currentImages.splice(index, 1);
       renderImagePreview();
     };
     
+    // Ok butonları (birden fazla fotoğraf varsa)
+    if (currentImages.length > 1) {
+      const arrows = document.createElement('div');
+      arrows.style.cssText = 'display: flex; gap: 4px;';
+      
+      if (index > 0) {
+        const leftBtn = document.createElement('button');
+        leftBtn.innerHTML = '◀';
+        leftBtn.style.cssText = 'background: rgba(255,255,255,0.15); border: none; color: white; font-size: 0.6rem; padding: 2px 5px; border-radius: 4px; cursor: pointer;';
+        leftBtn.onclick = (e) => {
+          e.preventDefault();
+          [currentImages[index - 1], currentImages[index]] = [currentImages[index], currentImages[index - 1]];
+          renderImagePreview();
+        };
+        arrows.appendChild(leftBtn);
+      }
+      
+      if (index < currentImages.length - 1) {
+        const rightBtn = document.createElement('button');
+        rightBtn.innerHTML = '▶';
+        rightBtn.style.cssText = 'background: rgba(255,255,255,0.15); border: none; color: white; font-size: 0.6rem; padding: 2px 5px; border-radius: 4px; cursor: pointer;';
+        rightBtn.onclick = (e) => {
+          e.preventDefault();
+          [currentImages[index], currentImages[index + 1]] = [currentImages[index + 1], currentImages[index]];
+          renderImagePreview();
+        };
+        arrows.appendChild(rightBtn);
+      }
+      
+      wrapper.appendChild(arrows);
+    }
+    
     wrapper.appendChild(img);
+    wrapper.appendChild(badge);
     wrapper.appendChild(removeBtn);
-    previewContainer.appendChild(wrapper);
+    grid.appendChild(wrapper);
   });
+  
+  previewContainer.appendChild(grid);
 }
 
 async function openFormModal(listingId = null) {
@@ -131,6 +214,7 @@ async function openFormModal(listingId = null) {
       document.getElementById('form-building-age').value = listing.buildingAge || '';
       document.getElementById('form-heating').value = listing.heatingType || '';
       document.getElementById('form-description').value = listing.description || '';
+      document.getElementById('form-video').value = listing.videoUrl || '';
       currentImages = listing.images ? [...listing.images] : [];
     }
   } else {
@@ -165,12 +249,28 @@ async function handleFormSubmit(e) {
   }
   
   try {
+    // Form doğrulama
+    const titleVal = document.getElementById('form-title').value.trim();
+    const priceVal = parseFloat(document.getElementById('form-price').value);
+    if (!titleVal) {
+      showToast('Lütfen ilan başlığı girin.', 'error');
+      return;
+    }
+    if (isNaN(priceVal) || priceVal <= 0) {
+      showToast('Lütfen geçerli bir fiyat girin.', 'error');
+      return;
+    }
+    
     const fileInput = document.getElementById('form-images');
     if (fileInput && fileInput.files.length > 0) {
       const files = Array.from(fileInput.files);
       for (const file of files) {
-        const compressed = await compressImage(file);
-        currentImages.push(compressed);
+        try {
+          const compressed = await compressImage(file);
+          currentImages.push(compressed);
+        } catch (imgErr) {
+          console.error('Fotoğraf sıkıştırma hatası:', imgErr);
+        }
       }
     }
     
@@ -186,15 +286,9 @@ async function handleFormSubmit(e) {
       buildingAge: parseInt(document.getElementById('form-building-age').value) || 0,
       heatingType: document.getElementById('form-heating').value,
       description: document.getElementById('form-description').value,
-      images: currentImages
+      images: currentImages,
+      videoUrl: document.getElementById('form-video').value.trim() || null
     };
-    
-    // Firestore 1MB doküman limiti kontrolü
-    const dataSize = new Blob([JSON.stringify(data)]).size;
-    if (dataSize > 900000) {
-      showToast('Toplam veri boyutu çok büyük! Lütfen daha az veya küçük fotoğraf ekleyin.', 'error');
-      return;
-    }
     
     const form = document.getElementById('admin-form');
     const editingId = form.getAttribute('data-editing-id');
@@ -340,6 +434,11 @@ function setupAdminEvents() {
   window.auth.onAuthStateChanged((user) => {
     if (user) {
       showAdminUI();
+      // Sayfa yenilenince admin butonlarının kartlarda görünmesi için yeniden render et
+      if (window.App) {
+        window.App.renderListings();
+        window.App.renderTestimonials();
+      }
     } else {
       hideAdminUI();
     }

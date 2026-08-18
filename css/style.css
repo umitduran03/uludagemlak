@@ -795,6 +795,28 @@ body {
   white-space: pre-wrap;
 }
 
+.detail-video {
+  margin-bottom: 24px;
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 */
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: #000;
+}
+
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
 .detail-actions {
   display: flex;
   gap: 12px;

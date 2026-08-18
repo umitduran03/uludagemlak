@@ -1,6 +1,6 @@
 const LISTING_TYPE_LABELS = { satilik: 'Satılık', kiralik: 'Kiralık', gunluk: 'Günlük Kiralık' };
 const PROPERTY_TYPE_LABELS = { daire: 'Daire', villa: 'Villa', mustakil: 'Müstakil Ev', arsa: 'Arsa', dukkan: 'Dükkan', ofis: 'Ofis' };
-const HEATING_TYPE_LABELS = { dogalgaz: 'Doğalgaz', kombi: 'Kombi', soba: 'Soba', merkezi: 'Merkezi', klima: 'Klima', yerden: 'Yerden Isıtma' };
+const HEATING_TYPE_LABELS = { dogalgaz: 'Doğalgaz', kombi: 'Kombi', soba: 'Soba', merkezi: 'Merkezi', klima: 'Klima', yerden: 'Yerden Isıtma', jeotermal: 'Jeotermal (Sanjet vb.)' };
 
 let currentListingImages = [];
 let currentImageIndex = 0;
@@ -22,6 +22,27 @@ function formatPrice(price, listingType) {
 
 function formatDate(isoString) {
   return new Date(isoString).toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+// YouTube URL'sini embed URL'sine dönüştür
+function getYouTubeEmbedUrl(url) {
+  if (!url) return '';
+  let videoId = '';
+  // youtube.com/watch?v=XXXX
+  const match1 = url.match(/[?&]v=([^&]+)/);
+  // youtu.be/XXXX
+  const match2 = url.match(/youtu\.be\/([^?&]+)/);
+  // youtube.com/embed/XXXX
+  const match3 = url.match(/embed\/([^?&]+)/);
+  // youtube.com/shorts/XXXX
+  const match4 = url.match(/shorts\/([^?&]+)/);
+  
+  if (match1) videoId = match1[1];
+  else if (match2) videoId = match2[1];
+  else if (match3) videoId = match3[1];
+  else if (match4) videoId = match4[1];
+  
+  return videoId ? `https://www.youtube.com/embed/${videoId}` : '';
 }
 
 async function getFilteredListings() {
@@ -52,7 +73,8 @@ async function getFilteredListings() {
 }
 
 function createCardHTML(listing) {
-  const hasImages = listing.images && listing.images.length > 0;
+  // thumbnail varsa onu kullan, yoksa eski images dizisindeki ilk fotoğrafı kullan (geriye uyumluluk)
+  const thumbSrc = listing.thumbnail || (listing.images && listing.images.length > 0 ? listing.images[0] : null);
   const adminHTML = window.Admin.isLoggedIn() ? `
     <div class="card-admin-actions">
       <button class="btn btn-small btn-ghost edit-btn" data-id="${listing.id}">✏️ Düzenle</button>
@@ -62,8 +84,8 @@ function createCardHTML(listing) {
   return `
     <div class="card" data-id="${listing.id}">
       <div class="card-image">
-        ${hasImages 
-          ? `<img src="${listing.images[0]}" alt="${escapeHTML(listing.title)}" loading="lazy">` 
+        ${thumbSrc 
+          ? `<img src="${thumbSrc}" alt="${escapeHTML(listing.title)}" loading="lazy">` 
           : `<div class="card-image-placeholder">🏠</div>`}
         <span class="card-badge badge-${listing.listingType}">${LISTING_TYPE_LABELS[listing.listingType] || ''}</span>
         <span class="card-price">${formatPrice(listing.price, listing.listingType)}</span>
@@ -145,6 +167,8 @@ async function openListingModal(id) {
   const wpLink1 = `https://wa.me/${wpNumber1}?text=${wpText}`;
   const wpLink2 = `https://wa.me/${wpNumber2}?text=${wpText}`;
   
+  const videoEmbedUrl = listing.videoUrl ? getYouTubeEmbedUrl(listing.videoUrl) : '';
+  
   body.innerHTML = `
     <div class="detail-gallery">
       ${currentListingImages.length > 0 
@@ -177,6 +201,14 @@ async function openListingModal(id) {
       </div>
       
       ${listing.description ? `<div class="detail-description">${escapeHTML(listing.description).replace(/\n/g, '<br>')}</div>` : ''}
+      
+      ${videoEmbedUrl ? `
+      <div class="detail-video">
+        <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 12px;">🎬 Video Tanıtım</h3>
+        <div class="video-container">
+          <iframe src="${videoEmbedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+        </div>
+      </div>` : ''}
       
       <div class="detail-actions" style="flex-direction: column; gap: 12px;">
         <p style="font-size: 0.85rem; color: #86868B; margin: 0;">Ercan ULUDAĞ</p>
