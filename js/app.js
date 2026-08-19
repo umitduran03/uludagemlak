@@ -220,17 +220,91 @@ async function openListingModal(id) {
   `;
   
   if (currentListingImages.length > 1) {
-    document.getElementById('modal-prev-btn').addEventListener('click', () => {
+    document.getElementById('modal-prev-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
       currentImageIndex = (currentImageIndex - 1 + currentListingImages.length) % currentListingImages.length;
       updateGallery();
     });
-    document.getElementById('modal-next-btn').addEventListener('click', () => {
+    document.getElementById('modal-next-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
       currentImageIndex = (currentImageIndex + 1) % currentListingImages.length;
       updateGallery();
     });
   }
   
+  // Fotoğrafa tıklandığında lightbox aç
+  const galleryImg = document.getElementById('modal-gallery-img');
+  if (galleryImg) {
+    galleryImg.style.cursor = 'pointer';
+    galleryImg.addEventListener('click', () => openLightbox());
+  }
+  
   modal.classList.remove('hidden');
+}
+
+// === LIGHTBOX FONKSİYONLARI ===
+function openLightbox() {
+  if (currentListingImages.length === 0) return;
+  const lightbox = document.getElementById('lightbox-modal');
+  updateLightboxImage();
+  lightbox.classList.remove('hidden');
+}
+
+function closeLightbox() {
+  const lightbox = document.getElementById('lightbox-modal');
+  if (lightbox) lightbox.classList.add('hidden');
+}
+
+function updateLightboxImage() {
+  const lightboxImg = document.getElementById('lightbox-img');
+  const counter = document.getElementById('lightbox-counter');
+  const prevBtn = document.getElementById('lightbox-prev');
+  const nextBtn = document.getElementById('lightbox-next');
+  
+  if (lightboxImg) lightboxImg.src = currentListingImages[currentImageIndex];
+  if (counter) counter.textContent = `${currentImageIndex + 1} / ${currentListingImages.length}`;
+  
+  if (currentListingImages.length <= 1) {
+    if (prevBtn) prevBtn.style.display = 'none';
+    if (nextBtn) nextBtn.style.display = 'none';
+  } else {
+    if (prevBtn) prevBtn.style.display = 'flex';
+    if (nextBtn) nextBtn.style.display = 'flex';
+  }
+}
+
+function setupLightboxEvents() {
+  const closeBtn = document.getElementById('lightbox-close');
+  const prevBtn = document.getElementById('lightbox-prev');
+  const nextBtn = document.getElementById('lightbox-next');
+  const lightbox = document.getElementById('lightbox-modal');
+  
+  if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+  if (lightbox) {
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox || e.target.classList.contains('lightbox-content')) {
+        closeLightbox();
+      }
+    });
+  }
+  
+  if (prevBtn) {
+    prevBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      currentImageIndex = (currentImageIndex - 1 + currentListingImages.length) % currentListingImages.length;
+      updateGallery();
+      updateLightboxImage();
+    });
+  }
+  
+  if (nextBtn) {
+    nextBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      currentImageIndex = (currentImageIndex + 1) % currentListingImages.length;
+      updateGallery();
+      updateLightboxImage();
+    });
+  }
 }
 
 function closeModal(modalId) {
@@ -352,11 +426,18 @@ async function renderTestimonials() {
 
   grid.innerHTML = testimonials.map(t => createTestimonialCardHTML(t)).join('');
 
+  const tPrevBtn = document.getElementById('testimonial-prev');
+  const tNextBtn = document.getElementById('testimonial-next');
+
   if (emptyState) {
     if (testimonials.length === 0) {
       emptyState.classList.remove('hidden');
+      if (tPrevBtn) tPrevBtn.style.display = 'none';
+      if (tNextBtn) tNextBtn.style.display = 'none';
     } else {
       emptyState.classList.add('hidden');
+      if (tPrevBtn) tPrevBtn.style.display = 'flex';
+      if (tNextBtn) tNextBtn.style.display = 'flex';
     }
   }
 }
@@ -367,11 +448,17 @@ function setupTestimonialEvents() {
     grid.addEventListener('click', (e) => {
       const editBtn = e.target.closest('.testimonial-edit-btn');
       const deleteBtn = e.target.closest('.testimonial-delete-btn');
+      const testimonialImg = e.target.closest('.testimonial-image');
 
       if (editBtn) {
         window.Admin.openTestimonialModal(editBtn.getAttribute('data-id'));
       } else if (deleteBtn) {
         window.Admin.confirmDeleteTestimonial(deleteBtn.getAttribute('data-id'));
+      } else if (testimonialImg) {
+        // Fotoğrafa tıklandığında lightbox ile tam ekran aç
+        currentListingImages = [testimonialImg.src];
+        currentImageIndex = 0;
+        openLightbox();
       }
     });
   }
@@ -395,6 +482,7 @@ function setupTestimonialEvents() {
 async function init() {
   setupEventListeners();
   setupTestimonialEvents();
+  setupLightboxEvents();
   if (window.Admin) window.Admin.setupAdminEvents();
   await renderListings();
   await renderTestimonials();
