@@ -4,11 +4,16 @@
 
 ## Hakkımızda
 
-Uludağ Emlak, Afyonkarahisar ili Sandıklı ilçesinde faaliyet gösteren profesyonel bir emlak ofisidir. Satılık daire, kiralık daire, villa, müstakil ev, arsa ve dükkan ilanları sunmaktayız.
+Uludağ Emlak, Afyonkarahisar ili Sandıklı ilçesinde faaliyet gösteren profesyonel bir emlak ofisidir. Satılık daire, kiralık daire, villa, müstakil ev, arsa, tarla ve dükkan ilanları sunmaktayız.
+
+- [Ana Sayfa](https://www.uludagemlakk.com/)
+- [İlanlar](https://www.uludagemlakk.com/#listings-section)
+- [Müşteri Memnuniyeti](https://www.uludagemlakk.com/#testimonials-section)
+- [İletişim](https://www.uludagemlakk.com/#contact-section)
 
 ## Hizmetlerimiz
 
-- **Satılık Emlak**: Daire, villa, müstakil ev, arsa, dükkan, ofis
+- **Satılık Emlak**: Daire, villa, müstakil ev, arsa, tarla, dükkan, ofis
 - **Kiralık Emlak**: Daire, villa, müstakil ev, dükkan, ofis
 - **Günlük Kiralık**: Daire ve villa seçenekleri
 
@@ -20,10 +25,11 @@ Uludağ Emlak, Afyonkarahisar ili Sandıklı ilçesinde faaliyet gösteren profe
 
 ## İletişim
 
-- **Ercan ULUDAĞ**: +90 532 453 11 71
-- **Hüseyin ULUDAĞ**: +90 538 632 28 78
-- **WhatsApp (Ercan)**: https://wa.me/905324531171
-- **WhatsApp (Hüseyin)**: https://wa.me/905386322878
+- **Ercan ULUDAĞ**: [+90 532 453 11 71](tel:+905324531171)
+- **Hüseyin ULUDAĞ**: [+90 538 632 28 78](tel:+905386322878)
+- **WhatsApp (Ercan)**: [WhatsApp ile İletişime Geç](https://wa.me/905324531171)
+- **WhatsApp (Hüseyin)**: [WhatsApp ile İletişime Geç](https://wa.me/905386322878)
+- **Instagram**: [@uludagemlak03](https://www.instagram.com/uludagemlak03)
 
 ## Çalışma Saatleri
 
@@ -32,10 +38,10 @@ Pazar: Kapalı
 
 ## Web Sitesi
 
-- **URL**: https://www.uludagemlakk.com
+- **URL**: [www.uludagemlakk.com](https://www.uludagemlakk.com)
 - **Dil**: Türkçe
 - **Hedef Kitle**: Sandıklı ve Afyonkarahisar bölgesinde emlak arayan bireyler
 
 ## Anahtar Kelimeler
 
-Sandıklı emlak, Afyonkarahisar emlak, satılık daire Sandıklı, kiralık daire Sandıklı, satılık arsa Sandıklı, villa Sandıklı, müstakil ev, Uludağ Emlak, emlak ilanları, günlük kiralık Sandıklı
+Sandıklı emlak, Afyonkarahisar emlak, satılık daire Sandıklı, kiralık daire Sandıklı, kiralık ev Sandıklı, satılık arsa Sandıklı, satılık tarla Sandıklı, villa Sandıklı, müstakil ev, Uludağ Emlak, emlak ilanları, günlük kiralık Sandıklı
