@@ -239,6 +239,9 @@ async function openListingModal(id) {
     galleryImg.addEventListener('click', () => openLightbox());
   }
   
+  // Parmakla kaydırma desteği
+  setupGallerySwipe();
+  
   modal.classList.remove('hidden');
 }
 
@@ -305,6 +308,48 @@ function setupLightboxEvents() {
       updateLightboxImage();
     });
   }
+
+  // Lightbox touch swipe desteği
+  if (lightbox) {
+    let touchStartX = 0;
+    lightbox.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    lightbox.addEventListener('touchend', (e) => {
+      const diff = e.changedTouches[0].screenX - touchStartX;
+      if (Math.abs(diff) > 50 && currentListingImages.length > 1) {
+        if (diff > 0) {
+          currentImageIndex = (currentImageIndex - 1 + currentListingImages.length) % currentListingImages.length;
+        } else {
+          currentImageIndex = (currentImageIndex + 1) % currentListingImages.length;
+        }
+        updateGallery();
+        updateLightboxImage();
+      }
+    }, { passive: true });
+  }
+}
+
+// Detay galerisi touch swipe desteği
+function setupGallerySwipe() {
+  const galleryImg = document.getElementById('modal-gallery-img');
+  if (!galleryImg) return;
+  let touchStartX = 0;
+  galleryImg.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+  galleryImg.addEventListener('touchend', (e) => {
+    const diff = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(diff) > 50 && currentListingImages.length > 1) {
+      if (diff > 0) {
+        currentImageIndex = (currentImageIndex - 1 + currentListingImages.length) % currentListingImages.length;
+      } else {
+        currentImageIndex = (currentImageIndex + 1) % currentListingImages.length;
+      }
+      updateGallery();
+      updateLightboxImage();
+    }
+  }, { passive: true });
 }
 
 function closeModal(modalId) {

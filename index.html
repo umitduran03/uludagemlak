@@ -42,8 +42,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=5">
+    <link rel="preconnect" href="https://uludagemlak-b5c3d.firebaseapp.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="css/style.css?v=6">
 
     <!-- Yapısal Veri (JSON-LD) -->
     <script type="application/ld+json">
@@ -88,7 +91,7 @@
     <header id="header" role="banner">
         <nav class="nav-container">
             <button id="logo-btn" class="logo-btn" title="Uludağ Emlak">
-                <img src="logo.png" alt="Uludağ Emlak Logo" class="logo-img">
+                <img src="logo.png" alt="Uludağ Emlak Logo" class="logo-img" width="180" height="90" fetchpriority="high">
             </button>
             <div id="nav-links" class="nav-links">
                 <a href="#hero" class="nav-link">Ana Sayfa</a>
