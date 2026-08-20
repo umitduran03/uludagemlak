@@ -211,9 +211,9 @@ async function openListingModal(id) {
       </div>` : ''}
       
       <div class="detail-actions" style="flex-direction: column; gap: 12px;">
-        <p style="font-size: 0.85rem; color: #86868B; margin: 0;">Ercan ULUDAĞ</p>
+        <p style="font-size: 0.85rem; color: #6e6e73; margin: 0;">Ercan ULUDAĞ</p>
         <a href="${wpLink1}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-large">📱 WhatsApp ile İletişime Geç</a>
-        <p style="font-size: 0.85rem; color: #86868B; margin: 0;">Hüseyin ULUDAĞ</p>
+        <p style="font-size: 0.85rem; color: #6e6e73; margin: 0;">Hüseyin ULUDAĞ</p>
         <a href="${wpLink2}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-large">📱 WhatsApp ile İletişime Geç</a>
       </div>
     </div>
